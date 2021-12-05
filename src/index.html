@@ -1,0 +1,52 @@
+<head> </head>
+<body>
+  <div id="app">
+    <div v-if="!initialized">
+      opencvを読込中です。しばらく待ってね。
+  </div>
+  <div>
+    <div>
+      <input type="file" accept='image/*' @change="previewFiles" multiple/>
+    </div>
+    <canvas id="input" width="200" height="200"
+    v-on:mousemove="onMouseMove"
+    v-on:click="onClickImage"
+></canvas>
+    <canvas id="output" width="200" height="200"></canvas>
+  </div>
+    
+    <div>
+      <button v-on:click="onButtonAClick">
+        button
+      </button>
+      <button v-on:click="onModeButtonClick('center_small')">
+        center_small
+      </button>
+      <button v-on:click="onModeButtonClick('center_large')">
+        center_large
+      </button>
+      <button v-on:click="onModeButtonClick('anchor_small')">
+        anchor_small
+      </button>
+      <button v-on:click="onModeButtonClick('anchor_large')">
+        anchor_large
+      </button>
+    <div>Mouse is at {{ mousePosition.x }}, {{ mousePosition.y }}</div>
+
+    <li v-for="(value, key, index) in positionDict">{{ key }}: {{ value }}</li>
+    <div>radius_small={{radius_small}}</div>
+    <div>radius_large={{radius_large}}</div>
+    <br>
+    <ol>
+      <li v-for="pos in positionHistory">{{ pos.x }}, {{ pos.y }}</li>
+    </ol>
+  </div>
+
+  <!-- <link rel="stylesheet" href="./main.css" /> -->
+  <script src="https://unpkg.com/lodash@4.17.20/lodash.min.js"></script>
+  <script src="https://unpkg.com/vue@3"></script>
+  <script src="https://unpkg.com/mathjs@9.5.1/lib/browser/math.js"></script>
+  <!-- <script src="https://docs.opencv.org/4.5.2/opencv.js"></script> -->
+  <script src="../libs/4.5.2/opencv.js"></script>
+  <script src="./main.js"></script>
+</body>
