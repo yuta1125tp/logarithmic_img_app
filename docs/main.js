@@ -66,16 +66,17 @@ const RootComponent = {
           x: 500 / 5,
           y: 500 / 5,
         },
-        anchor_small: {
-          x: 500 / 5 + 150 / 5,
-          y: 500 / 5,
-        },
-        anchor_large: {
-          x: 500 / 5 + 400 / 5,
-          y: 500 / 5,
-        },
+        // anchor_small: {
+        //   x: 500 / 5 + 150 / 5,
+        //   y: 500 / 5,
+        // },
+        // anchor_large: {
+        //   x: 500 / 5 + 400 / 5,
+        //   y: 500 / 5,
+        // },
       },
       mode: null,
+      radius_marker: 5,
       // name: "Vue.js",
       // counter: 0,
       // groceryList: [
@@ -89,46 +90,61 @@ const RootComponent = {
       // seen: true,
       // placeholder1: null,
       // placeholder2: undefined,
+      radius_small: 20, //30,
+      radius_large: 95, //80
+      // radius_small: 30,
+      // radius_large: 80,
+      image_url:
+        "https://cdn.pixabay.com/photo/2016/08/30/03/16/watercolor-1629721__340.jpg",
     };
   },
   computed: {
     multiplicationResult() {
       return this.count * this.times;
     },
-    radius_small() {
-      if (
-        this.positionDict["center_small"] &&
-        this.positionDict["anchor_small"]
-      ) {
-        return (
-          ((this.positionDict["center_small"].x -
-            this.positionDict["anchor_small"].x) **
-            2 +
-            (this.positionDict["center_small"].y -
-              this.positionDict["anchor_small"].y) **
-              2) **
-          0.5
-        );
-      }
-      return null;
-    },
-    radius_large() {
-      if (
-        this.positionDict["center_large"] &&
-        this.positionDict["anchor_large"]
-      ) {
-        return (
-          ((this.positionDict["center_large"].x -
-            this.positionDict["anchor_large"].x) **
-            2 +
-            (this.positionDict["center_large"].y -
-              this.positionDict["anchor_large"].y) **
-              2) **
-          0.5
-        );
-      }
-      return null;
-    },
+    // radius_small() {
+    //   if (
+    //     this.positionDict["center_small"] &&
+    //     this.positionDict["anchor_small"]
+    //   ) {
+    //     return (
+    //       ((this.positionDict["center_small"].x -
+    //         this.positionDict["anchor_small"].x) **
+    //         2 +
+    //         (this.positionDict["center_small"].y -
+    //           this.positionDict["anchor_small"].y) **
+    //           2) **
+    //       0.5
+    //     );
+    //   }
+    //   return null;
+    // },
+    // radius_large() {
+    //   if (
+    //     this.positionDict["center_large"] &&
+    //     this.positionDict["anchor_large"]
+    //   ) {
+    //     return (
+    //       ((this.positionDict["center_large"].x -
+    //         this.positionDict["anchor_large"].x) **
+    //         2 +
+    //         (this.positionDict["center_large"].y -
+    //           this.positionDict["anchor_large"].y) **
+    //           2) **
+    //       0.5
+    //     );
+    //   }
+    //   return null;
+    // },
+  },
+  onModeButtonReset(event) {
+    this.radius_small = 20; //30;
+    this.radius_large = 95; //80;
+    this.positionDict.center_small.x = 100;
+    this.positionDict.center_small.y = 100;
+    this.positionDict.center_large.x = 100;
+    this.positionDict.center_large.y = 100;
+    this.positionHistory = [];
   },
   mounted() {
     cv["onRuntimeInitialized"] = () => {
@@ -156,31 +172,27 @@ const RootComponent = {
         reader.readAsDataURL(file);
       });
     },
-    // show(inputCanvasId, outputCanvasId) {
-    //   let src = cv.imread(inputCanvasId);
-    //   let dst = new cv.Mat();
-    //   cv.cvtColor(src, dst, cv.COLOR_RGB2GRAY, 0);
-    //   cv.imshow(outputCanvasId, dst);
-    //   src.delete();
-    //   dst.delete();
-    // },
-    previewFiles(event) {
-      console.log(event.target.files);
+    async previewFiles(event) {
       this.inputfile = event.target.files[0];
-      console.log(this.inputfile);
-      this.opencvRoutine(null);
+      await this.load("input", this.inputfile);
+    },
+    onButtonLoadFromURL(event) {
+      console.log(this.image_url);
+      var canvas = document.getElementById("input");
+      var ctx = canvas.getContext("2d");
+      var image = new Image();
+      image.onload = function () {
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+      };
+      image.src = this.image_url;
+      image.crossOrigin = "Anonymous";
+
+      // await this.load("input", this.image_url);
     },
     onButtonAClick(event) {
-      // this.inputfile = new File(
-      //   ["http://127.0.0.1:5500/assets/source3.jpg"],
-      //   "http://127.0.0.1:5500/assets/source3.jpg",
-      //   { type: "image/jpeg" }
-      // );
-      // console.log(this.inputfile);
-      // this.opencvRoutine(null);
+      this.opencvRoutine(null);
     },
-    async opencvRoutine(event) {
-      await this.load("input", this.inputfile);
+    opencvRoutine(event) {
       // this.show("input", "output");
       inputCanvasId = "input";
       outputCanvasId = "output";
@@ -302,7 +314,10 @@ const RootComponent = {
             ]);
           } else {
             scale1 = 100;
-            xy_list2 = z_to_xy(log_z) * scale1;
+            xy_list2 = z_to_xy(log_z).map((x) => [
+              x[0] * scale1,
+              x[1] * scale1,
+            ]);
           }
           console.log("xy_list2", xy_list2[0]);
           src_xy = xy_list2.map((x) => [
@@ -360,8 +375,12 @@ const RootComponent = {
       this.mode = mode;
     },
     onMouseMove(event) {
-      this.mousePosition.x = event.offsetX; //clientX;
-      this.mousePosition.y = event.offsetY; //clientY;
+      var rect = event.currentTarget.getBoundingClientRect(),
+        offsetX = event.clientX - rect.left,
+        offsetY = event.clientY - rect.top;
+
+      this.mousePosition.x = offsetX; //clientX;
+      this.mousePosition.y = offsetY; //clientY;
     },
     onClickImage(event) {
       console.log("hoge");
@@ -372,6 +391,23 @@ const RootComponent = {
         y: this.mousePosition.y,
       });
       if (this.mode !== null) {
+        if (this.mode.startsWith("anchor_")) {
+          if (this.mode.endsWith("_small")) {
+            this.radius_small =
+              ((this.mousePosition.x - this.positionDict["center_small"].x) **
+                2 +
+                (this.mousePosition.y - this.positionDict["center_small"].y) **
+                  2) **
+              0.5;
+          } else if (this.mode.endsWith("_large")) {
+            this.radius_large =
+              ((this.mousePosition.x - this.positionDict["center_large"].x) **
+                2 +
+                (this.mousePosition.y - this.positionDict["center_large"].y) **
+                  2) **
+              0.5;
+          }
+        }
         this.positionDict[this.mode] = {
           x: this.mousePosition.x,
           y: this.mousePosition.y,
