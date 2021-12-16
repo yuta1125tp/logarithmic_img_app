@@ -1,0 +1,45 @@
+#container {
+  position: relative;
+}
+#circle_center_small {
+  background: #f00;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  position: absolute;
+  top: -5px;
+  left: -5px;
+}
+#circle_center_large {
+  background: #00f;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  position: absolute;
+  top: 30px;
+  left: 30px;
+}
+#circle_outter_small {
+  border: 2px solid rgb(128, 0, 0);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0);
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  top: -5px;
+  left: -5px;
+}
+#circle_outter_large {
+  border: 2px solid rgb(0, 0, 128);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0);
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  top: -5px;
+  left: -5px;
+}
+
+canvas {
+  border: 1px solid black;
+}

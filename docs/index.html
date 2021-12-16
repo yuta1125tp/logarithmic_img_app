@@ -6,18 +6,57 @@
   </div>
   <div>
     <div>
-      <input type="file" accept='image/*' @change="previewFiles" multiple/>
+      <input type="file" accept='image/*' @change="previewFiles"/>
     </div>
-    <canvas id="input" width="200" height="200"
-    v-on:mousemove="onMouseMove"
-    v-on:click="onClickImage"
-></canvas>
+    <div>
+      <button v-on:click="onButtonLoadFromURL">urlから読み込み</button>
+      <input v-model="image_url" placeholder="url"> 
+    </div>
+    <div id="container"
+      v-on:mousemove="onMouseMove"
+      v-on:click="onClickImage"
+    >
+      <div id="circle_outter_small"
+        v-bind:style="{
+          top:(positionDict.center_small.y - radius_small - radius_marker /2) + 'px',
+          left:(positionDict.center_small.x - radius_small - radius_marker /2) + 'px',
+          width: radius_small * 2 + 'px',
+          height: radius_small * 2 + 'px',
+        }"
+      ></div>
+      <div id="circle_outter_large"
+        v-bind:style="{
+          top:(positionDict.center_large.y - radius_large - radius_marker/2) + 'px',
+          left:(positionDict.center_large.x - radius_large- radius_marker/2) + 'px',
+          width: radius_large * 2 + 'px',
+          height: radius_large * 2 + 'px',
+        }"
+      ></div>
+        <div id="circle_center_small"
+        v-bind:style="{
+          top:positionDict.center_small.y - radius_marker  + 'px',
+          left:positionDict.center_small.x - radius_marker  + 'px',
+          width: radius_marker * 2 + 'px',
+          height: radius_marker * 2 + 'px',
+        }"
+      ></div>
+      <div id="circle_center_large"
+        v-bind:style="{
+          top:positionDict.center_large.y - radius_marker + 'px',
+          left:positionDict.center_large.x - radius_marker + 'px',
+          width: radius_marker * 2 + 'px',
+          height: radius_marker * 2 + 'px',
+        }"
+      ></div>
+      <canvas id="input" width="200" height="200"
+      ></canvas>
+    </div>
     <canvas id="output" width="200" height="200"></canvas>
   </div>
     
     <div>
       <button v-on:click="onButtonAClick">
-        button
+        convert!
       </button>
       <button v-on:click="onModeButtonClick('center_small')">
         center_small
@@ -31,7 +70,10 @@
       <button v-on:click="onModeButtonClick('anchor_large')">
         anchor_large
       </button>
-    <div>Mouse is at {{ mousePosition.x }}, {{ mousePosition.y }}</div>
+      <button v-on:click="onModeButtonReset">
+        reset
+      </button>
+      <div>Mouse is at {{ mousePosition.x }}, {{ mousePosition.y }}</div>
 
     <li v-for="(value, key, index) in positionDict">{{ key }}: {{ value }}</li>
     <div>radius_small={{radius_small}}</div>
@@ -42,11 +84,12 @@
     </ol>
   </div>
 
-  <!-- <link rel="stylesheet" href="./main.css" /> -->
+  <link rel="stylesheet" type="text/css" href="./main.css" />
   <script src="https://unpkg.com/lodash@4.17.20/lodash.min.js"></script>
   <script src="https://unpkg.com/vue@3"></script>
   <script src="https://unpkg.com/mathjs@9.5.1/lib/browser/math.js"></script>
   <script src="https://docs.opencv.org/4.5.2/opencv.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
   <!-- <script src="../libs/4.5.2/opencv.js"></script> -->
   <script src="./main.js"></script>
 </body>
